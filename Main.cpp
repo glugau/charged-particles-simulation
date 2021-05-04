@@ -192,9 +192,6 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		handleInputs(window, &hud_particle);
-
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
 	}
 
 	ChargedParticle::deleteAll();
