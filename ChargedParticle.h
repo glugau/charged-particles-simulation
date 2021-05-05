@@ -29,6 +29,7 @@ public:
 	void update(long long dt_millis);
 	void updateAcceleration();
 	void changeMassCharge(float mass, float charge);
+	void removeFromList();
 
 private:
 	ChargedParticle();

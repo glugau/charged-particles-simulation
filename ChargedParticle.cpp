@@ -20,26 +20,30 @@ void ChargedParticle::drawAll() {
 }
 
 void ChargedParticle::deleteAll() {
-	for (int i = 0; i < full_list.size(); i++) {
+	int size = full_list.size();
+	for (int i = 0; i < size; i++) {
 		delete full_list[i];
 	}
+	full_list.clear();
 }
 
 ChargedParticle::ChargedParticle(Vector2 position, Vector2 velocity, float mass, float charge, bool is_hud)
 	: velocity(velocity), position(position), mass(mass), charge(charge), acceleration(Vector2::zero()), is_hud(is_hud)
 {
 	generateBuffers();
+	full_list.push_back(this);
 }
 
-ChargedParticle::~ChargedParticle() {
-	// Remove from full_list
+void ChargedParticle::removeFromList() {
 	for (unsigned int i = 0; i < full_list.size(); i++) {
 		if (full_list[i] == this) {
 			full_list.erase(full_list.begin() + i);
 			break;
 		}
 	}
+}
 
+ChargedParticle::~ChargedParticle() {
 	GLCALL(glDeleteBuffers(1, &vbo));
 	GLCALL(glDeleteBuffers(1, &ebo));
 }
@@ -129,7 +133,6 @@ void ChargedParticle::generateBuffers() {
 			vertex_indices[index + 2] = 1;
 		}
 	}
-	full_list.push_back(this);
 
 	if (charge <= 0) { // Negative charge => blue
 		float others = (float)((PARTICLE_MIN_CHARGE - charge) / PARTICLE_MIN_CHARGE);

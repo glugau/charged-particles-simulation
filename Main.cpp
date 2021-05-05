@@ -93,7 +93,38 @@ static void clickUpHandle(GLFWwindow* window, ChargedParticle* hud_particle) {
 	new ChargedParticle(start_drag_position, velocity * PARTICLE_DRAG_DROP_VELOCITY_MULTIPLIER, hud_particle->mass, hud_particle->charge);
 }
 
-static int  previous_inputs[5]; // up, down, left, right, click
+static void rightClickUpHandle(GLFWwindow* window) {
+	float xpos, ypos;
+	if (mouseWorldPosition(window, &xpos, &ypos)) {
+		Vector2 mousePos = Vector2(xpos, ypos);
+		for (int i = 0; i < ChargedParticle::full_list.size(); i++) {
+			if (ChargedParticle::full_list[i]->is_hud)
+				continue;
+
+			if (Vector2::distance(mousePos, ChargedParticle::full_list[i]->position) - (ChargedParticle::full_list[i]->mass * CIRCLE_RADIUS_PER_MASS_UNIT) < 0) {
+				ChargedParticle* ptr = ChargedParticle::full_list[i];
+				ptr->removeFromList();
+				delete ptr;
+			}
+		}
+	}
+}
+
+static void deleteHandle() {
+	if (ChargedParticle::full_list.size() < 2) return;
+	ChargedParticle* ptr;
+	int ind = ChargedParticle::full_list.size() - 1;
+	do {
+		if (ind < 0) return;
+		ptr = ChargedParticle::full_list[ind];
+		ind--;
+	} while (ptr->is_hud);
+
+	ptr->removeFromList();
+	delete ptr;
+}
+
+static int  previous_inputs[7]; // up, down, left, right, left click, right click, delete
 static void handleInputs(GLFWwindow* window, ChargedParticle* hud_particle) {
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && previous_inputs[0] == GLFW_RELEASE)
 		upArrowHandle(hud_particle);
@@ -107,12 +138,18 @@ static void handleInputs(GLFWwindow* window, ChargedParticle* hud_particle) {
 		clickDownHandle(window, hud_particle);
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE && previous_inputs[4] == GLFW_PRESS)
 		clickUpHandle(window, hud_particle);
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_RELEASE && previous_inputs[5] == GLFW_PRESS)
+		rightClickUpHandle(window);
+	if (glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS && previous_inputs[6] == GLFW_RELEASE)
+		deleteHandle();
 
 	previous_inputs[0] = glfwGetKey(window, GLFW_KEY_UP);
 	previous_inputs[1] = glfwGetKey(window, GLFW_KEY_DOWN);
 	previous_inputs[2] = glfwGetKey(window, GLFW_KEY_LEFT);
 	previous_inputs[3] = glfwGetKey(window, GLFW_KEY_RIGHT);
 	previous_inputs[4] = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1);
+	previous_inputs[5] = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2);
+	previous_inputs[6] = glfwGetKey(window, GLFW_KEY_DELETE);
 }
 
 static long long timeMilliseconds() {
@@ -127,6 +164,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	GLFWwindow* window = glfwCreateWindow(WINDOW_SIZE, WINDOW_SIZE, WINDOW_TITLE, NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create a GLFW window.\n";
@@ -134,7 +172,7 @@ int main() {
 	}
 	glfwMakeContextCurrent(window);
 
-	glfwSwapInterval(0);
+	glfwSwapInterval(1);
 
 	// Initialize glew
 	GLenum err = glewInit();
