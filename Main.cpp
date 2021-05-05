@@ -80,7 +80,6 @@ static void clickDownHandle(GLFWwindow* window, ChargedParticle* hud_particle) {
 	float xpos, ypos;
 	if (mouseWorldPosition(window, &xpos, &ypos)) {
 		start_drag_position = Vector2(xpos, ypos);
-		std::cout << xpos << " " << ypos << std::endl;
 	}
 }
 
@@ -135,7 +134,7 @@ int main() {
 	}
 	glfwMakeContextCurrent(window);
 
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 
 	// Initialize glew
 	GLenum err = glewInit();
@@ -173,9 +172,12 @@ int main() {
 	GLCALL(ChargedParticle::circlePositionUniform = glGetUniformLocation(ChargedParticle::shaderProgram, "centerPos"));
 	GLCALL(ChargedParticle::circleColorUniform = glGetUniformLocation(ChargedParticle::shaderProgram, "circleColor"));
 
-	ChargedParticle hud_particle(Vector2(-0.85f, 0.85f), Vector2(0.0f, 0.0f), 1.0f, 0 * PARTICLE_CHARGE_MULTIPLIER, true);
+	ChargedParticle* hud_particle = new ChargedParticle(Vector2(-0.85f, 0.85f), Vector2(0.0f, 0.0f), 1.0f, 0 * PARTICLE_CHARGE_MULTIPLIER, true);
+	// Heap allocated to be able to call ChargedParticle::delete() through ChargedParticle::deleteAll() (else it tries deleting a stack allocated object and it crashes)
+	// The others are heap allocated because they are spawned from handleInputs()
 
 	long long previous_time = timeMilliseconds();
+
 	while (!glfwWindowShouldClose(window)) {
 		long long current_time = timeMilliseconds();
 		long long dt_millis = current_time - previous_time;
@@ -189,14 +191,16 @@ int main() {
 		GLCALL(glUniform2f(ChargedParticle::circlePositionUniform, 0, 0));
 		GLCALL(glUniform3f(ChargedParticle::circleColorUniform, 1.0f, 0.0f, 0.0f));
 
+		glFlush();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		handleInputs(window, &hud_particle);
+		handleInputs(window, hud_particle);
 	}
+	GLCALL(glDisableVertexAttribArray(0));
+	GLCALL(glDeleteVertexArrays(1, &vao));
+	GLCALL(glDeleteProgram(ChargedParticle::shaderProgram));
 
 	ChargedParticle::deleteAll();
-
-	GLCALL(glDeleteProgram(ChargedParticle::shaderProgram));
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

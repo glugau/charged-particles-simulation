@@ -20,8 +20,9 @@ void ChargedParticle::drawAll() {
 }
 
 void ChargedParticle::deleteAll() {
-	for (int i = 0; i < full_list.size(); i++)
+	for (int i = 0; i < full_list.size(); i++) {
 		delete full_list[i];
+	}
 }
 
 ChargedParticle::ChargedParticle(Vector2 position, Vector2 velocity, float mass, float charge, bool is_hud)
