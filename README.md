@@ -13,7 +13,7 @@ You can interact with the simulation in many different ways:
 - Up and down arrows control the mass of the next particle
 - Left and right arrows control the charge
 - To spawn a particle, you must click and drag with your cursor. The particle will spawn at the initial click position, and its velocity will be proportional to the distance between the initial click position and the release position.
-- Do despawn a particle, you can right click on it. If the particle is too small/fast to click, you can use the delete key to despawn the youngest particle in the simulation.
+- To unspawn a particle, you can right click on it. If the particle is too small/fast to click, you can use the delete key to despawn the youngest particle in the simulation.
 
 ## Note
 If you want to experiment, you can edit values in constants.h. This file allows you to change the maximum/minimum charge/mass as well as a few other variables. This will require you to rebuild the project.
