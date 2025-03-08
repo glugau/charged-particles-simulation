@@ -1,4 +1,5 @@
 # Charged particles simulation
+One of my first projects!
 
 This is a very simple charged particle simulation made using C++, OpenGL and GLFW.
 
