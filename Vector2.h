@@ -32,7 +32,7 @@ struct Vector2
 	}
 
 	inline static float distance(Vector2 a, Vector2 b) {
-		return std::sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+		return sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 	}
 
 	inline static float distance_squared(Vector2 a, Vector2 b) {
@@ -44,7 +44,7 @@ struct Vector2
 	}
 
 	inline Vector2 normalized() {
-		float norm = std::sqrtf(x*x + y*y);
+		float norm = sqrtf(x*x + y*y);
 		if (norm == 0)
 			return zero();
 		return (*this) / norm;

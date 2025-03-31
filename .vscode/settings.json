@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.ejs": "html",
+        "*.compute": "hlsl",
+        "*.hlsl": "hlsl",
+        "cmath": "cpp"
+    }
+}

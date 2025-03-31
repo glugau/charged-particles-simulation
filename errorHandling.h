@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <iostream>
 
-#define ASSERT(x) if(!(x)) __debugbreak();
+#define ASSERT(x) if(!(x)) std::cerr << "Assertion failed: " << __FILE__ << " - " << __LINE__;
 #define GLCALL(x) GLClearError(); x; ASSERT(GLCheckError(#x, __FILE__, __LINE__))
 
 inline void GLClearError() {
